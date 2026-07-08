@@ -1,0 +1,50 @@
+[
+  {
+    "name": "booking:start shows party size selection",
+    "steps": [
+      {
+        "send": { "callback": "booking:start" },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "How many guests will be dining?" } }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "booking:size shows date selection",
+    "steps": [
+      {
+        "send": { "callback": "booking:start" },
+        "expect": [{ "method": "editMessageText" }]
+      },
+      {
+        "send": { "callback": "booking:size:2" },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Pick a date for your reservation:" } }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "booking:cancel main menu button starts ref entry",
+    "steps": [
+      {
+        "send": { "callback": "booking:cancel" },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Please enter the reference code from your booking confirmation.\n\nType it below, or tap back to return to the menu." } }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "booking:reschedule main menu button starts ref entry",
+    "steps": [
+      {
+        "send": { "callback": "booking:reschedule" },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "Please enter the reference code from your booking confirmation.\n\nType it below, or tap back to return to the menu." } }
+        ]
+      }
+    ]
+  }
+]

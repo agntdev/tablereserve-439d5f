@@ -2,11 +2,25 @@ import { Composer } from "grammy";
 import { readdirSync } from "node:fs";
 import { createBot, type BotContext } from "./toolkit/index.js";
 
-// The per-chat session shape (ephemeral conversation state only). Extend as the
-// bot grows. Durable domain data must NOT live here — use the toolkit's
-// persistent storage (see AGENTS.md).
+// The per-chat session shape (ephemeral conversation state only).
+// Durable domain data must NOT live here — use the toolkit's persistent storage.
 export interface Session {
-  // example: step?: "awaiting_amount";
+  /** Current flow step. */
+  step: string;
+  /** The booking reference being worked on (reschedule/cancel). */
+  bookingRef?: string;
+  /** Party size selected during booking. */
+  partySize?: number;
+  /** Date selected during booking. */
+  bookingDate?: string;
+  /** Selected slot start time. */
+  slotTime?: string;
+  /** Guest name collected during booking. */
+  guestName?: string;
+  /** Guest phone collected during booking. */
+  guestPhone?: string;
+  /** Reschedule: original booking date + time (for display). */
+  origBookingInfo?: string;
 }
 
 export type Ctx = BotContext<Session>;
@@ -19,7 +33,7 @@ export type Ctx = BotContext<Session>;
  */
 export async function buildBot(token: string) {
   const bot = createBot<Session>(token, {
-    initial: () => ({}),
+    initial: () => ({ step: "idle" }),
   });
 
   const dir = new URL("./handlers/", import.meta.url);
@@ -34,7 +48,7 @@ export async function buildBot(token: string) {
     );
   } catch (err) {
     if ((err as NodeJS.ErrnoException).code !== "ENOENT") throw err;
-    files = []; // no handlers/ dir yet → nothing to load
+    files = [];
   }
   for (const file of files.sort()) {
     const mod = (await import(new URL(file, dir).href)) as { default?: Composer<Ctx> };
@@ -43,6 +57,12 @@ export async function buildBot(token: string) {
     }
     bot.use(mod.default);
   }
+
+  // /cancel at the top level — cancels any flow from any handler
+  bot.command("cancel", async (ctx) => {
+    ctx.session.step = "idle";
+    await ctx.reply("Cancelled. Tap /start to begin again.");
+  });
 
   bot.on("message", (ctx) => ctx.reply("Sorry, I didn't understand that. Try /help."));
 

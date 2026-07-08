@@ -7,7 +7,7 @@
         "expect": [
           {
             "method": "sendMessage",
-            "payload": { "text": "👋 Welcome! Tap a button below to get started." }
+            "payload": { "text": "👋 Welcome to TableReserve.\n\nTap a button below to book a table, or pick from the menu." }
           }
         ]
       }

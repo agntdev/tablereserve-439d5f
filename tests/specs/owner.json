@@ -1,0 +1,41 @@
+[
+  {
+    "name": "/today requires owner authentication",
+    "steps": [
+      {
+        "send": { "text": "/today" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": { "text": "This command is only available to restaurant staff." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "/bookings requires owner authentication",
+    "steps": [
+      {
+        "send": { "text": "/bookings" },
+        "expect": [
+          {
+            "method": "sendMessage",
+            "payload": { "text": "This command is only available to restaurant staff." }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "owner:panel shows auth gate for non-owners",
+    "steps": [
+      {
+        "send": { "callback": "owner:panel" },
+        "expect": [
+          { "method": "editMessageText", "payload": { "text": "This section is only available to restaurant staff." } }
+        ]
+      }
+    ]
+  }
+]
